@@ -254,16 +254,16 @@ class TestGatedDelta(mlx_tests.MLXTestCase):
 
     @unittest.skipIf(not mx.metal.is_available(), "Metal is not available")
     def test_gated_delta_sequential(self):
-        os.environ["GATED_DELTA_CHUNK"] = "0"
-        for dims in self.gpu_dims:
-            (out, hf), (out_ref, hf_ref) = runner(dims, reference=False)
-            msg = f"Failed on Dimensions: {dims}"
-            self.assertTrue(
-                mx.allclose(out_ref, out, atol=1e-4, rtol=1e-4), msg="Out " + msg
-            )
-            self.assertTrue(
-                mx.allclose(hf_ref, hf, atol=1e-4, rtol=1e-4), msg="State " + msg
-            )
+        with mx.config.scoped_update(GATED_DELTA_CHUNK=0):
+            for dims in self.gpu_dims:
+                (out, hf), (out_ref, hf_ref) = runner(dims, reference=False)
+                msg = f"Failed on Dimensions: {dims}"
+                self.assertTrue(
+                    mx.allclose(out_ref, out, atol=1e-4, rtol=1e-4), msg="Out " + msg
+                )
+                self.assertTrue(
+                    mx.allclose(hf_ref, hf, atol=1e-4, rtol=1e-4), msg="State " + msg
+                )
 
     @unittest.skipIf(not mx.metal.is_available(), "Metal is not available")
     def test_gated_delta_vectorized_g(self):
@@ -278,29 +278,29 @@ class TestGatedDelta(mlx_tests.MLXTestCase):
 
     @unittest.skipIf(not mx.metal.is_available(), "Metal is not available")
     def test_gated_delta_simdgroup(self):
-        os.environ["GATED_DELTA_CHUNK"] = "8"
-        for dims in self.gpu_dims:
-            (out, hf), (out_ref, hf_ref) = runner(dims, reference=False)
-            msg = f"Failed on Dimensions: {dims}"
-            self.assertTrue(
-                mx.allclose(out_ref, out, atol=1e-4, rtol=1e-4), msg="Out " + msg
-            )
-            self.assertTrue(
-                mx.allclose(hf_ref, hf, atol=1e-4, rtol=1e-4), msg="State " + msg
-            )
+        with mx.config.scoped_update(GATED_DELTA_CHUNK=8):
+            for dims in self.gpu_dims:
+                (out, hf), (out_ref, hf_ref) = runner(dims, reference=False)
+                msg = f"Failed on Dimensions: {dims}"
+                self.assertTrue(
+                    mx.allclose(out_ref, out, atol=1e-4, rtol=1e-4), msg="Out " + msg
+                )
+                self.assertTrue(
+                    mx.allclose(hf_ref, hf, atol=1e-4, rtol=1e-4), msg="State " + msg
+                )
 
     @unittest.skipIf(not mx.metal.is_available(), "Metal is not available")
     def test_gated_delta_nax(self):
-        os.environ["GATED_DELTA_CHUNK"] = "16"
-        for dims in self.gpu_dims:
-            (out, hf), (out_ref, hf_ref) = runner(dims, reference=False)
-            msg = f"Failed on Dimensions: {dims}"
-            self.assertTrue(
-                mx.allclose(out_ref, out, atol=1e-1, rtol=1e-4), msg="Out " + msg
-            )
-            self.assertTrue(
-                mx.allclose(hf_ref, hf, atol=1e-1, rtol=1e-4), msg="State " + msg
-            )
+        with mx.config.scoped_update(GATED_DELTA_CHUNK=16):
+            for dims in self.gpu_dims:
+                (out, hf), (out_ref, hf_ref) = runner(dims, reference=False)
+                msg = f"Failed on Dimensions: {dims}"
+                self.assertTrue(
+                    mx.allclose(out_ref, out, atol=1e-1, rtol=1e-4), msg="Out " + msg
+                )
+                self.assertTrue(
+                    mx.allclose(hf_ref, hf, atol=1e-1, rtol=1e-4), msg="State " + msg
+                )
 
     @unittest.skipIf(not mx.metal.is_available(), "Metal is not available")
     def test_gated_delta_vjp(self):
